@@ -474,109 +474,111 @@ const QUESTIONS_PER_SESSION = 7;
 // --- Components ---
 
 const DynamicBackground = ({ step, section }: { step: string, section: string }) => {
+  const [randomSeed, setRandomSeed] = useState(() => Math.random());
+  
+  useEffect(() => {
+    const interval = setInterval(() => setRandomSeed(Math.random()), 8000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Dynamic colors based on section - Maximum intensity
+  const primaryColor = section === 'SR' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(59, 130, 246, 0.7)';
+  const secondaryColor = section === 'SR' ? 'rgba(5, 150, 105, 0.5)' : 'rgba(37, 99, 235, 0.5)';
+  const accentColor = step === 'results' ? 'rgba(234, 179, 8, 0.7)' : primaryColor;
+
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-slate-950">
-      {/* Base Gradient Layers */}
-      <div className={`absolute inset-0 transition-colors duration-1000 opacity-40 ${
-        step === 'onboarding' ? 'bg-blue-900/20' :
-        step === 'results' ? 'bg-yellow-900/20' :
-        section === 'CT' ? 'bg-blue-900/20' : 'bg-emerald-900/20'
-      }`} />
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-[#010413]">
+      {/* Intense Moving Gradients */}
+      <div className="absolute inset-0">
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.6, 1],
+            opacity: [0.5, 0.9, 0.5],
+            x: ['-25%', '25%', '-25%'],
+            y: ['-25%', '25%', '-25%']
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 left-0 w-full h-full rounded-full blur-[160px]"
+          style={{ background: `radial-gradient(circle, ${accentColor} 0%, transparent 75%)` }}
+        />
+        <motion.div 
+          animate={{ 
+            scale: [1.6, 1, 1.6],
+            opacity: [0.4, 0.8, 0.4],
+            x: ['25%', '-25%', '25%'],
+            y: ['25%', '-25%', '25%']
+          }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-0 right-0 w-full h-full rounded-full blur-[160px]"
+          style={{ background: `radial-gradient(circle, ${secondaryColor} 0%, transparent 75%)` }}
+        />
+      </div>
 
-      {/* Animated Elements */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step + section}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
-          className="absolute inset-0"
-        >
-          {step === 'onboarding' && (
-            <div className="absolute inset-0">
-              {/* Circuit Grid Effect */}
-              <div className="absolute inset-0 opacity-30 animate-flow" 
-                   style={{ 
-                     backgroundImage: `linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)`,
-                     backgroundSize: '40px 40px' 
-                   }} />
-              {/* Energy Pulses */}
-              <motion.div 
-                animate={{ 
-                  opacity: [0.1, 0.3, 0.1],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{ duration: 5, repeat: Infinity }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-radial from-blue-500/10 to-transparent blur-3xl" 
-              />
-              {/* Floating "Sparks" */}
-              {[...Array(5)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    y: [-20, 20, -20],
-                    x: [-20, 20, -20],
-                    opacity: [0.2, 0.5, 0.2]
-                  }}
-                  transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute w-64 h-64 bg-blue-400/5 rounded-full blur-3xl"
-                  style={{ top: `${20 * i}%`, left: `${15 * i}%` }}
-                />
-              ))}
-            </div>
-          )}
+      {/* Technical Grid Overlay - High Visibility */}
+      <div className="absolute inset-0 opacity-[0.4] animate-flow" 
+           style={{ 
+             backgroundImage: `linear-gradient(to right, ${section === 'SR' ? '#10b981' : '#3b82f6'} 3px, transparent 3px), linear-gradient(to bottom, ${section === 'SR' ? '#10b981' : '#3b82f6'} 3px, transparent 3px)`,
+             backgroundSize: '120px 120px',
+             WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 90%)',
+             maskImage: 'radial-gradient(circle at center, black, transparent 90%)'
+           }} />
 
-          {step === 'quiz' && (
-            <div className="absolute inset-0">
-              {/* Section Specific Textures */}
-              <div className={`absolute inset-0 opacity-20 transition-all duration-1000 ${
-                section === 'CT' 
-                ? 'bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]' 
-                : 'bg-[linear-gradient(45deg,#10b981_1px,transparent_1px),linear-gradient(-45deg,#10b981_1px,transparent_1px)] [background-size:30px_30px]'
-              }`} />
-              
-              {/* Dynamic Glow */}
-              <motion.div 
-                animate={{ 
-                  opacity: [0.1, 0.2, 0.1],
-                  scale: [1, 1.2, 1]
-                }}
-                transition={{ duration: 8, repeat: Infinity }}
-                className={`absolute inset-0 blur-[120px] ${section === 'CT' ? 'bg-blue-600/20' : 'bg-emerald-600/20'}`}
-              />
-            </div>
-          )}
+      {/* High-Voltage Energy Bolts - Electric Feel */}
+      <div className="absolute inset-0">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i + randomSeed}
+            initial={{ opacity: 0, scaleX: 0, x: '-100%' }}
+            animate={{
+              opacity: [0, 1, 0],
+              scaleX: [0, 2.5, 0],
+              x: ['-100%', '200%']
+            }}
+            transition={{
+              duration: 1 + Math.random() * 1.5,
+              repeat: Infinity,
+              delay: i * 0.8,
+              ease: "easeInOut"
+            }}
+            className={`absolute h-[4px] w-full blur-[2px] shadow-[0_0_25px_white] ${section === 'SR' ? 'bg-emerald-200' : 'bg-blue-200'}`}
+            style={{ top: `${5 + (i * 18)}%` }}
+          />
+        ))}
+      </div>
 
-          {step === 'results' && (
-            <div className="absolute inset-0 overflow-hidden bg-slate-950">
-              {/* Celebration Sparks */}
-              {[...Array(30)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ y: -100, x: Math.random() * 100 + '%' }}
-                  animate={{ 
-                    y: ['0vh', '110vh'],
-                    opacity: [0, 1, 0],
-                    rotate: [0, 360]
-                  }}
-                  transition={{ 
-                    duration: Math.random() * 3 + 2, 
-                    repeat: Infinity, 
-                    delay: Math.random() * 5,
-                    ease: "linear"
-                  }}
-                  className="absolute w-1 h-12 bg-gradient-to-b from-yellow-400 to-transparent blur-[1px]"
-                />
-              ))}
-              <div className="absolute inset-0 bg-gradient-radial from-yellow-500/5 to-transparent blur-3xl" />
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+      {/* Results Celebration - Maximum Sparkle */}
+      {step === 'results' && (
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(80)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ y: -100, x: `${(i * 1.25 + randomSeed * 100) % 100}%` }}
+              animate={{ 
+                y: ['0vh', '115vh'],
+                opacity: [0, 1, 0],
+                scale: [1, 2.5, 1]
+              }}
+              transition={{ 
+                duration: 0.8 + Math.random() * 1, 
+                repeat: Infinity, 
+                delay: Math.random() * 2,
+                ease: "linear"
+              }}
+              className="absolute w-[5px] h-32 bg-gradient-to-b from-yellow-100 to-transparent blur-[1px] shadow-[0_0_20px_rgba(234,179,8,1)]"
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Global Overlay to ensure readability */}
-      <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]" />
+      {/* Constant Scanning Beam - Intense */}
+      <motion.div 
+        animate={{ y: ['-100%', '200%'] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        className="absolute left-0 right-0 h-[50vh] bg-gradient-to-b from-transparent via-white/10 to-transparent pointer-events-none blur-xl"
+      />
+
+      {/* Dark Vignette for Focus */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(1,4,19,0.95)_100%)]" />
     </div>
   );
 };
@@ -826,11 +828,18 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-blue-500/30 transition-colors duration-300 ${
+    <div className={`min-h-screen font-sans selection:bg-blue-500/30 transition-colors duration-300 relative bg-transparent ${
       highContrast ? 'bg-black text-white' : 'text-slate-100'
-    }`}>
-      {/* Accessibility Toolbar */}
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
+    } ${fontSize === 'large' ? 'text-lg' : 'text-base'}`}>
+      {/* Dynamic Background - Ensuring it's behind everything but visible */}
+      {!highContrast && (
+        <DynamicBackground step={step} section={currentSection} />
+      )}
+
+      {/* Main Content Wrapper */}
+      <div className="relative z-10">
+        {/* Accessibility Toolbar */}
+        <div className="fixed top-4 right-4 z-50 flex gap-2">
         <div className="hidden sm:block mr-4 p-2 bg-black rounded-xl border border-slate-800 shadow-xl">
           <Logo className="scale-90" />
         </div>
@@ -845,8 +854,8 @@ export default function App() {
         </button>
         <button
           onClick={() => setFontSize(fontSize === 'normal' ? 'large' : 'normal')}
-          className={`p-3 rounded-full shadow-lg transition-all ${
-            fontSize === 'large' ? 'bg-blue-500 text-white' : 'bg-slate-800 text-white hover:bg-slate-700'
+          className={`p-3 rounded-full shadow-lg transition-all border-2 ${
+            fontSize === 'large' ? 'bg-blue-500 text-white border-blue-400 scale-110' : 'bg-slate-800 text-white border-slate-700 hover:bg-slate-700'
           }`}
           title="Aumentar Tamaño de Letra"
         >
@@ -882,22 +891,22 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl"
+              className={`bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl ${fontSize === 'large' ? 'space-y-10' : 'space-y-0'}`}
             >
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-600/20 animate-float">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight">ElectroLógica</h1>
-                  <p className="text-slate-400 font-medium">Liceo El Palomar - Copiapó</p>
+                  <h1 className={`font-bold tracking-tight ${fontSize === 'large' ? 'text-4xl md:text-5xl' : 'text-3xl md:text-4xl'}`}>ElectroLógica</h1>
+                  <p className={`text-slate-400 font-medium ${fontSize === 'large' ? 'text-lg' : 'text-base'}`}>Liceo El Palomar - Copiapó</p>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-blue-400">Bienvenido, Técnico</h2>
-                    <p className={`text-slate-300 leading-relaxed ${fontSize === 'large' ? 'text-xl' : 'text-base'}`}>
+                  <h2 className={`font-semibold text-blue-400 ${fontSize === 'large' ? 'text-2xl' : 'text-xl'}`}>Bienvenido, Técnico</h2>
+                    <p className={`text-slate-300 leading-relaxed ${fontSize === 'large' ? 'text-2xl' : 'text-base'}`}>
                       Bienvenido al portal de aprendizaje inclusivo del Liceo El Palomar. 
                       Esta herramienta está diseñada para que todos los técnicos puedan aprender sobre seguridad y lógica sin barreras.
                     </p>
@@ -908,8 +917,8 @@ export default function App() {
                       { icon: FileText, text: "Reporte Profesional PDF" }
                     ].map((item, i) => (
                       <li key={i} className="flex items-center gap-3 text-slate-400">
-                        <item.icon className="w-5 h-5 text-yellow-500" />
-                        <span>{item.text}</span>
+                        <item.icon className={`text-yellow-500 ${fontSize === 'large' ? 'w-7 h-7' : 'w-5 h-5'}`} />
+                        <span className={fontSize === 'large' ? 'text-xl' : 'text-base'}>{item.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -917,7 +926,7 @@ export default function App() {
 
                 <form onSubmit={startQuiz} className="space-y-6 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400 flex items-center gap-2">
+                    <label className={`font-medium text-slate-400 flex items-center gap-2 ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                       <User className="w-4 h-4" /> Nombre Completo
                     </label>
                     <input
@@ -925,19 +934,19 @@ export default function App() {
                       type="text"
                       value={userData.name}
                       onChange={e => setUserData(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      className={`w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all ${fontSize === 'large' ? 'text-xl' : 'text-base'}`}
                       placeholder="Ej: Juan Pérez"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400 flex items-center gap-2">
+                    <label className={`font-medium text-slate-400 flex items-center gap-2 ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                       <GraduationCap className="w-4 h-4" /> Curso / Especialidad
                     </label>
                     <select
                       required
                       value={userData.course}
                       onChange={e => setUserData(prev => ({ ...prev, course: e.target.value }))}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
+                      className={`w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none ${fontSize === 'large' ? 'text-xl' : 'text-base'}`}
                     >
                       <option value="" disabled>Selecciona tu curso</option>
                       <option value="3ºE Electricidad">3ºE Electricidad</option>
@@ -965,11 +974,11 @@ export default function App() {
             >
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-yellow-500 rounded-2xl shadow-lg shadow-yellow-600/20 animate-float">
-                  <BookOpen className="w-8 h-8 text-slate-950" />
+                  <BookOpen className={`text-slate-950 ${fontSize === 'large' ? 'w-10 h-10' : 'w-8 h-8'}`} />
                 </div>
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Contexto Pedagógico</h2>
-                  <p className="text-slate-400">Programa de Integración Escolar (PIE)</p>
+                  <h2 className={`font-bold tracking-tight ${fontSize === 'large' ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>Contexto Pedagógico</h2>
+                  <p className={`text-slate-400 ${fontSize === 'large' ? 'text-lg' : 'text-base'}`}>Programa de Integración Escolar (PIE)</p>
                 </div>
               </div>
 
@@ -978,9 +987,9 @@ export default function App() {
                   <div className={`bg-slate-950/50 p-5 rounded-2xl border border-slate-800 ${highContrast ? 'border-yellow-400' : ''}`}>
                     <div className="flex items-center gap-2 text-blue-400 mb-2">
                       <Target className="w-5 h-5" />
-                      <span className="text-sm font-bold uppercase tracking-wider">Objetivo</span>
+                      <span className={`font-bold uppercase tracking-wider ${fontSize === 'large' ? 'text-base' : 'text-sm'}`}>Objetivo</span>
                     </div>
-                    <p className={`text-slate-300 leading-relaxed ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
+                    <p className={`text-slate-300 leading-relaxed ${fontSize === 'large' ? 'text-xl' : 'text-sm'}`}>
                       Identificar errores de razonamiento en el trabajo eléctrico para mejorar la seguridad de todos.
                     </p>
                   </div>
@@ -988,9 +997,9 @@ export default function App() {
                   <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-800">
                     <div className="flex items-center gap-2 text-yellow-500 mb-2">
                       <Layers className="w-5 h-5" />
-                      <span className="text-sm font-bold uppercase tracking-wider">Unidad</span>
+                      <span className={`font-bold uppercase tracking-wider ${fontSize === 'large' ? 'text-base' : 'text-sm'}`}>Unidad</span>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed">
+                    <p className={`text-slate-300 leading-relaxed ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                       Lógica, Falacias y Sesgos Cognitivos en el Contexto Laboral.
                     </p>
                   </div>
@@ -1000,9 +1009,9 @@ export default function App() {
                   <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-800">
                     <div className="flex items-center gap-2 text-green-400 mb-2">
                       <Info className="w-5 h-5" />
-                      <span className="text-sm font-bold uppercase tracking-wider">Temática y Contenido</span>
+                      <span className={`font-bold uppercase tracking-wider ${fontSize === 'large' ? 'text-base' : 'text-sm'}`}>Temática y Contenido</span>
                     </div>
-                    <ul className="text-slate-300 text-sm space-y-2">
+                    <ul className={`text-slate-300 space-y-2 ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                       <li className="flex gap-2">
                         <span className="text-blue-500 font-bold">1.</span>
                         Pensamiento Crítico: Falacias y Sesgos.
@@ -1021,9 +1030,9 @@ export default function App() {
                   <div className="bg-slate-950/50 p-5 rounded-2xl border border-slate-800">
                     <div className="flex items-center gap-2 text-purple-400 mb-2">
                       <GraduationCap className="w-5 h-5" />
-                      <span className="text-sm font-bold uppercase tracking-wider">Dirigido a</span>
+                      <span className={`font-bold uppercase tracking-wider ${fontSize === 'large' ? 'text-base' : 'text-sm'}`}>Dirigido a</span>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed">
+                    <p className={`text-slate-300 leading-relaxed ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                       Estudiantes de 3º Medio - Especialidad: Electricidad. (Asignatura: Filosofía / Educación Ciudadana).
                     </p>
                   </div>
@@ -1056,8 +1065,8 @@ export default function App() {
               className="space-y-8"
             >
               <div className="text-center space-y-4">
-                <h2 className="text-3xl font-bold tracking-tight">Elige tu punto de partida</h2>
-                <p className="text-slate-400 max-w-lg mx-auto">
+                <h2 className={`font-bold tracking-tight ${fontSize === 'large' ? 'text-4xl' : 'text-3xl'}`}>Elige tu punto de partida</h2>
+                <p className={`text-slate-400 max-w-lg mx-auto ${fontSize === 'large' ? 'text-xl' : 'text-base'}`}>
                   Ambas secciones son obligatorias para completar la evaluación. Selecciona con cuál deseas comenzar.
                 </p>
               </div>
@@ -1071,22 +1080,22 @@ export default function App() {
                     completedSections.includes('CT')
                     ? 'bg-blue-500/10 border-blue-500/50 cursor-default'
                     : 'bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/20'
-                  }`}
+                  } ${fontSize === 'large' ? 'p-10' : 'p-8'}`}
                 >
                   <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Cpu className="w-24 h-24" />
+                    <Cpu className={fontSize === 'large' ? 'w-32 h-32' : 'w-24 h-24'} />
                   </div>
                   <div className="relative z-10 space-y-4">
                     <div className={`p-3 rounded-2xl w-fit ${completedSections.includes('CT') ? 'bg-blue-500 text-white' : 'bg-blue-500/10'}`}>
                       {completedSections.includes('CT') ? <CheckCircle2 className="w-8 h-8" /> : <Cpu className="w-8 h-8 text-blue-400" />}
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-2">SECCIÓN PENSAMIENTO CRÍTICO</h3>
-                      <p className="text-slate-400 text-sm leading-relaxed">
+                      <h3 className={`font-bold mb-2 ${fontSize === 'large' ? 'text-2xl' : 'text-xl'}`}>SECCIÓN PENSAMIENTO CRÍTICO</h3>
+                      <p className={`text-slate-400 leading-relaxed ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                         Análisis de falacias y sesgos cognitivos aplicados a la seguridad eléctrica.
                       </p>
                     </div>
-                    <div className={`flex items-center gap-2 font-bold text-sm pt-4 ${completedSections.includes('CT') ? 'text-blue-400' : 'text-blue-400'}`}>
+                    <div className={`flex items-center gap-2 font-bold pt-4 ${completedSections.includes('CT') ? 'text-blue-400' : 'text-blue-400'} ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                       {completedSections.includes('CT') ? (
                         <span className="flex items-center gap-2">Sección Completada <CheckCircle2 className="w-4 h-4" /></span>
                       ) : (
@@ -1104,22 +1113,22 @@ export default function App() {
                     completedSections.includes('SR')
                     ? 'bg-green-500/10 border-green-500/50 cursor-default'
                     : 'bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-green-500 hover:shadow-2xl hover:shadow-green-500/20'
-                  }`}
+                  } ${fontSize === 'large' ? 'p-10' : 'p-8'}`}
                 >
                   <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <ShieldAlert className="w-24 h-24" />
+                    <ShieldAlert className={fontSize === 'large' ? 'w-32 h-32' : 'w-24 h-24'} />
                   </div>
                   <div className="relative z-10 space-y-4">
                     <div className={`p-3 rounded-2xl w-fit ${completedSections.includes('SR') ? 'bg-green-500 text-white' : 'bg-green-500/10'}`}>
                       {completedSections.includes('SR') ? <CheckCircle2 className="w-8 h-8" /> : <ShieldAlert className="w-8 h-8 text-green-400" />}
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-2">SECCIÓN RESPONSABILIDAD SOCIAL E INDIVIDUAL</h3>
-                      <p className="text-slate-400 text-sm leading-relaxed">
+                      <h3 className={`font-bold mb-2 ${fontSize === 'large' ? 'text-2xl' : 'text-xl'}`}>SECCIÓN RESPONSABILIDAD SOCIAL E INDIVIDUAL</h3>
+                      <p className={`text-slate-400 leading-relaxed ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                         Ética profesional, ciudadanía y compromiso con el medio ambiente.
                       </p>
                     </div>
-                    <div className={`flex items-center gap-2 font-bold text-sm pt-4 ${completedSections.includes('SR') ? 'text-green-400' : 'text-green-400'}`}>
+                    <div className={`flex items-center gap-2 font-bold pt-4 ${completedSections.includes('SR') ? 'text-green-400' : 'text-green-400'} ${fontSize === 'large' ? 'text-lg' : 'text-sm'}`}>
                       {completedSections.includes('SR') ? (
                         <span className="flex items-center gap-2">Sección Completada <CheckCircle2 className="w-4 h-4" /></span>
                       ) : (
@@ -1307,8 +1316,8 @@ export default function App() {
                           }`} />
                         </div>
                         <div>
-                          <h4 className="font-bold mb-1">Nota del Instructor:</h4>
-                          <p className="text-slate-300">
+                          <h4 className={`font-bold mb-1 ${fontSize === 'large' ? 'text-xl' : 'text-base'}`}>Nota del Instructor:</h4>
+                          <p className={`text-slate-300 ${fontSize === 'large' ? 'text-xl' : 'text-base'}`}>
                             {activeQuestions[currentQuestionIdx].options.find(o => o.id === selectedOptionId)?.feedback}
                           </p>
                         </div>
@@ -1316,7 +1325,7 @@ export default function App() {
                       
                       <button
                         onClick={nextQuestion}
-                        className="mt-6 w-full bg-slate-100 text-slate-950 font-bold py-3 rounded-xl hover:bg-white transition-colors flex items-center justify-center gap-2"
+                        className={`mt-6 w-full bg-slate-100 text-slate-950 font-bold py-3 rounded-xl hover:bg-white transition-colors flex items-center justify-center gap-2 ${fontSize === 'large' ? 'text-xl py-4' : 'text-base'}`}
                       >
                         {currentQuestionIdx === activeQuestions.length - 1 
                           ? completedSections.length === 0 
@@ -1344,23 +1353,23 @@ export default function App() {
                 <Rocket className="absolute -top-2 -right-2 w-8 h-8 text-blue-500 animate-shake" />
               </div>
               
-              <h2 className="text-3xl font-bold mb-2">¡Evaluación Completada!</h2>
-              <p className="text-slate-400 mb-8">Has finalizado el módulo de Lógica y Ética Eléctrica.</p>
+              <h2 className={`font-bold mb-2 ${fontSize === 'large' ? 'text-4xl' : 'text-3xl'}`}>¡Evaluación Completada!</h2>
+              <p className={`text-slate-400 mb-8 ${fontSize === 'large' ? 'text-xl' : 'text-base'}`}>Has finalizado el módulo de Lógica y Ética Eléctrica.</p>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
                 <div className="bg-slate-950/50 p-6 rounded-2xl border border-slate-800">
-                  <span className="text-xs font-mono text-slate-500 uppercase block mb-1">Puntaje</span>
-                  <span className="text-3xl font-bold text-blue-400">{userData.score}</span>
+                  <span className={`font-mono text-slate-500 uppercase block mb-1 ${fontSize === 'large' ? 'text-sm' : 'text-xs'}`}>Puntaje</span>
+                  <span className={`font-bold text-blue-400 ${fontSize === 'large' ? 'text-4xl' : 'text-3xl'}`}>{userData.score}</span>
                 </div>
                 <div className="bg-slate-950/50 p-6 rounded-2xl border border-slate-800">
-                  <span className="text-xs font-mono text-slate-500 uppercase block mb-1">Tiempo</span>
-                  <span className="text-3xl font-bold text-blue-400 flex items-center justify-center gap-2">
-                    <Clock className="w-5 h-5" /> {calculateTime()}
+                  <span className={`font-mono text-slate-500 uppercase block mb-1 ${fontSize === 'large' ? 'text-sm' : 'text-xs'}`}>Tiempo</span>
+                  <span className={`font-bold text-blue-400 flex items-center justify-center gap-2 ${fontSize === 'large' ? 'text-4xl' : 'text-3xl'}`}>
+                    <Clock className={fontSize === 'large' ? 'w-7 h-7' : 'w-5 h-5'} /> {calculateTime()}
                   </span>
                 </div>
                 <div className="col-span-2 md:col-span-1 bg-slate-950/50 p-6 rounded-2xl border border-slate-800">
-                  <span className="text-xs font-mono text-slate-500 uppercase block mb-1">Rango</span>
-                  <span className="text-lg font-bold text-yellow-500">{getRank()}</span>
+                  <span className={`font-mono text-slate-500 uppercase block mb-1 ${fontSize === 'large' ? 'text-sm' : 'text-xs'}`}>Rango</span>
+                  <span className={`font-bold text-yellow-500 ${fontSize === 'large' ? 'text-2xl' : 'text-lg'}`}>{getRank()}</span>
                 </div>
               </div>
 
@@ -1427,6 +1436,7 @@ export default function App() {
         <p>Creado por: Christian Nùñez, Asesor Pedagògico, Programa PACE-UDA, 2026</p>
         <p className="mt-2 text-blue-500 font-bold">Liceo El Palomar - Copiapó | Inclusión PIE</p>
       </footer>
+      </div>
     </div>
   );
 }
