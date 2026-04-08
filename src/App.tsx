@@ -475,12 +475,12 @@ const QUESTIONS_PER_SESSION = 7;
 
 const DynamicBackground = ({ step, section }: { step: string, section: string }) => {
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-      {/* Base Gradient */}
-      <div className={`absolute inset-0 transition-colors duration-1000 ${
-        step === 'onboarding' ? 'bg-slate-950' :
-        step === 'results' ? 'bg-blue-950' :
-        section === 'CT' ? 'bg-slate-950' : 'bg-emerald-950'
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-slate-950">
+      {/* Base Gradient Layers */}
+      <div className={`absolute inset-0 transition-colors duration-1000 opacity-40 ${
+        step === 'onboarding' ? 'bg-blue-900/20' :
+        step === 'results' ? 'bg-yellow-900/20' :
+        section === 'CT' ? 'bg-blue-900/20' : 'bg-emerald-900/20'
       }`} />
 
       {/* Animated Elements */}
@@ -488,63 +488,95 @@ const DynamicBackground = ({ step, section }: { step: string, section: string })
         <motion.div
           key={step + section}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.5 }}
+          transition={{ duration: 1 }}
           className="absolute inset-0"
         >
           {step === 'onboarding' && (
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute top-0 left-0 w-full h-full animate-flow" 
-                   style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+            <div className="absolute inset-0">
+              {/* Circuit Grid Effect */}
+              <div className="absolute inset-0 opacity-30 animate-flow" 
+                   style={{ 
+                     backgroundImage: `linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)`,
+                     backgroundSize: '40px 40px' 
+                   }} />
+              {/* Energy Pulses */}
               <motion.div 
-                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 blur-[120px] rounded-full" 
+                animate={{ 
+                  opacity: [0.1, 0.3, 0.1],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{ duration: 5, repeat: Infinity }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-radial from-blue-500/10 to-transparent blur-3xl" 
               />
+              {/* Floating "Sparks" */}
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{
+                    y: [-20, 20, -20],
+                    x: [-20, 20, -20],
+                    opacity: [0.2, 0.5, 0.2]
+                  }}
+                  transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute w-64 h-64 bg-blue-400/5 rounded-full blur-3xl"
+                  style={{ top: `${20 * i}%`, left: `${15 * i}%` }}
+                />
+              ))}
             </div>
           )}
 
           {step === 'quiz' && (
             <div className="absolute inset-0">
-              <div className={`absolute inset-0 opacity-10 ${section === 'CT' ? 'bg-[url("https://www.transparenttextures.com/patterns/carbon-fibre.png")]' : 'bg-[url("https://www.transparenttextures.com/patterns/circuit-board.png")]'}`} />
+              {/* Section Specific Textures */}
+              <div className={`absolute inset-0 opacity-20 transition-all duration-1000 ${
+                section === 'CT' 
+                ? 'bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]' 
+                : 'bg-[linear-gradient(45deg,#10b981_1px,transparent_1px),linear-gradient(-45deg,#10b981_1px,transparent_1px)] [background-size:30px_30px]'
+              }`} />
+              
+              {/* Dynamic Glow */}
               <motion.div 
                 animate={{ 
-                  x: [0, 100, 0], 
-                  y: [0, 50, 0],
+                  opacity: [0.1, 0.2, 0.1],
                   scale: [1, 1.2, 1]
                 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className={`absolute top-0 left-0 w-full h-full opacity-20 blur-[100px] ${section === 'CT' ? 'bg-blue-600' : 'bg-emerald-600'}`}
+                transition={{ duration: 8, repeat: Infinity }}
+                className={`absolute inset-0 blur-[120px] ${section === 'CT' ? 'bg-blue-600/20' : 'bg-emerald-600/20'}`}
               />
             </div>
           )}
 
           {step === 'results' && (
-            <div className="absolute inset-0 overflow-hidden">
-              {[...Array(20)].map((_, i) => (
+            <div className="absolute inset-0 overflow-hidden bg-slate-950">
+              {/* Celebration Sparks */}
+              {[...Array(30)].map((_, i) => (
                 <motion.div
                   key={i}
-                  initial={{ y: -20, x: Math.random() * 100 + '%' }}
+                  initial={{ y: -100, x: Math.random() * 100 + '%' }}
                   animate={{ 
-                    y: ['0vh', '100vh'],
-                    opacity: [0, 1, 0]
+                    y: ['0vh', '110vh'],
+                    opacity: [0, 1, 0],
+                    rotate: [0, 360]
                   }}
                   transition={{ 
-                    duration: Math.random() * 2 + 1, 
+                    duration: Math.random() * 3 + 2, 
                     repeat: Infinity, 
-                    delay: Math.random() * 2 
+                    delay: Math.random() * 5,
+                    ease: "linear"
                   }}
-                  className="absolute w-1 h-8 bg-yellow-400/40 blur-sm"
+                  className="absolute w-1 h-12 bg-gradient-to-b from-yellow-400 to-transparent blur-[1px]"
                 />
               ))}
+              <div className="absolute inset-0 bg-gradient-radial from-yellow-500/5 to-transparent blur-3xl" />
             </div>
           )}
         </motion.div>
       </AnimatePresence>
 
-      {/* Global Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/50 to-slate-950" />
+      {/* Global Overlay to ensure readability */}
+      <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]" />
     </div>
   );
 };
@@ -795,7 +827,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen font-sans selection:bg-blue-500/30 transition-colors duration-300 ${
-      highContrast ? 'bg-black text-white' : 'bg-slate-950 text-slate-100'
+      highContrast ? 'bg-black text-white' : 'text-slate-100'
     }`}>
       {/* Accessibility Toolbar */}
       <div className="fixed top-4 right-4 z-50 flex gap-2">
