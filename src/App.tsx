@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useRef, FormEvent } from 'react';
+import { useState, useEffect, useRef, FormEvent, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen,
@@ -473,115 +473,108 @@ const QUESTIONS_PER_SESSION = 7;
 
 // --- Components ---
 
-const DynamicBackground = ({ step, section }: { step: string, section: string }) => {
-  const [randomSeed, setRandomSeed] = useState(() => Math.random());
-  
-  useEffect(() => {
-    const interval = setInterval(() => setRandomSeed(Math.random()), 8000);
-    return () => clearInterval(interval);
-  }, []);
-  
-  // Dynamic colors based on section - Maximum intensity
-  const primaryColor = section === 'SR' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(59, 130, 246, 0.7)';
-  const secondaryColor = section === 'SR' ? 'rgba(5, 150, 105, 0.5)' : 'rgba(37, 99, 235, 0.5)';
-  const accentColor = step === 'results' ? 'rgba(234, 179, 8, 0.7)' : primaryColor;
+const DynamicBackground = memo(({ step, section }: { step: string, section: string }) => {
+  // Dynamic colors based on section
+  const primaryColor = section === 'SR' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(59, 130, 246, 0.4)';
+  const secondaryColor = section === 'SR' ? 'rgba(5, 150, 105, 0.3)' : 'rgba(37, 99, 235, 0.3)';
+  const accentColor = step === 'results' ? 'rgba(234, 179, 8, 0.5)' : primaryColor;
+
+  // Memoize particles to prevent re-calculation on every render
+  const energyBolts = useMemo(() => [...Array(4)], []);
+  const celebrationParticles = useMemo(() => [...Array(25)], []);
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-[#010413]">
-      {/* Intense Moving Gradients */}
-      <div className="absolute inset-0">
+      {/* Intense Moving Gradients - Optimized Blur */}
+      <div className="absolute inset-0 opacity-60">
         <motion.div 
           animate={{ 
-            scale: [1, 1.6, 1],
-            opacity: [0.5, 0.9, 0.5],
-            x: ['-25%', '25%', '-25%'],
-            y: ['-25%', '25%', '-25%']
+            scale: [1, 1.2, 1],
+            x: ['-10%', '10%', '-10%'],
+            y: ['-10%', '10%', '-10%']
           }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 left-0 w-full h-full rounded-full blur-[160px]"
-          style={{ background: `radial-gradient(circle, ${accentColor} 0%, transparent 75%)` }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute top-0 left-0 w-full h-full rounded-full blur-[100px] will-change-transform"
+          style={{ background: `radial-gradient(circle, ${accentColor} 0%, transparent 70%)` }}
         />
         <motion.div 
           animate={{ 
-            scale: [1.6, 1, 1.6],
-            opacity: [0.4, 0.8, 0.4],
-            x: ['25%', '-25%', '25%'],
-            y: ['25%', '-25%', '25%']
+            scale: [1.2, 1, 1.2],
+            x: ['10%', '-10%', '10%'],
+            y: ['10%', '-10%', '10%']
           }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-0 right-0 w-full h-full rounded-full blur-[160px]"
-          style={{ background: `radial-gradient(circle, ${secondaryColor} 0%, transparent 75%)` }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-0 right-0 w-full h-full rounded-full blur-[100px] will-change-transform"
+          style={{ background: `radial-gradient(circle, ${secondaryColor} 0%, transparent 70%)` }}
         />
       </div>
 
-      {/* Technical Grid Overlay - High Visibility */}
-      <div className="absolute inset-0 opacity-[0.4] animate-flow" 
+      {/* Technical Grid Overlay - Optimized opacity */}
+      <div className="absolute inset-0 opacity-[0.2] animate-flow" 
            style={{ 
-             backgroundImage: `linear-gradient(to right, ${section === 'SR' ? '#10b981' : '#3b82f6'} 3px, transparent 3px), linear-gradient(to bottom, ${section === 'SR' ? '#10b981' : '#3b82f6'} 3px, transparent 3px)`,
-             backgroundSize: '120px 120px',
-             WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 90%)',
-             maskImage: 'radial-gradient(circle at center, black, transparent 90%)'
+             backgroundImage: `linear-gradient(to right, ${section === 'SR' ? '#10b981' : '#3b82f6'} 2px, transparent 2px), linear-gradient(to bottom, ${section === 'SR' ? '#10b981' : '#3b82f6'} 2px, transparent 2px)`,
+             backgroundSize: '100px 100px',
+             maskImage: 'radial-gradient(circle at center, black, transparent 80%)'
            }} />
 
-      {/* High-Voltage Energy Bolts - Electric Feel */}
+      {/* High-Voltage Energy Bolts - Reduced count and simplified */}
       <div className="absolute inset-0">
-        {[...Array(6)].map((_, i) => (
+        {energyBolts.map((_, i) => (
           <motion.div
-            key={i + randomSeed}
-            initial={{ opacity: 0, scaleX: 0, x: '-100%' }}
+            key={i}
             animate={{
-              opacity: [0, 1, 0],
-              scaleX: [0, 2.5, 0],
+              opacity: [0, 0.8, 0],
               x: ['-100%', '200%']
             }}
             transition={{
-              duration: 1 + Math.random() * 1.5,
+              duration: 2 + i * 0.5,
               repeat: Infinity,
-              delay: i * 0.8,
+              delay: i * 1.2,
               ease: "easeInOut"
             }}
-            className={`absolute h-[4px] w-full blur-[2px] shadow-[0_0_25px_white] ${section === 'SR' ? 'bg-emerald-200' : 'bg-blue-200'}`}
-            style={{ top: `${5 + (i * 18)}%` }}
+            className={`absolute h-[2px] w-full blur-[1px] will-change-transform ${section === 'SR' ? 'bg-emerald-400' : 'bg-blue-400'}`}
+            style={{ top: `${15 + (i * 20)}%` }}
           />
         ))}
       </div>
 
-      {/* Results Celebration - Maximum Sparkle */}
+      {/* Results Celebration - Optimized particle count */}
       {step === 'results' && (
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(80)].map((_, i) => (
+          {celebrationParticles.map((_, i) => (
             <motion.div
               key={i}
-              initial={{ y: -100, x: `${(i * 1.25 + randomSeed * 100) % 100}%` }}
+              initial={{ y: -100, x: `${(i * 4) % 100}%` }}
               animate={{ 
-                y: ['0vh', '115vh'],
-                opacity: [0, 1, 0],
-                scale: [1, 2.5, 1]
+                y: ['0vh', '110vh'],
+                opacity: [0, 1, 0]
               }}
               transition={{ 
-                duration: 0.8 + Math.random() * 1, 
+                duration: 1.5 + (i % 3) * 0.5, 
                 repeat: Infinity, 
-                delay: Math.random() * 2,
+                delay: (i % 10) * 0.2,
                 ease: "linear"
               }}
-              className="absolute w-[5px] h-32 bg-gradient-to-b from-yellow-100 to-transparent blur-[1px] shadow-[0_0_20px_rgba(234,179,8,1)]"
+              className="absolute w-[3px] h-20 bg-gradient-to-b from-yellow-200 to-transparent blur-[1px] will-change-transform"
+              style={{ boxShadow: '0 0 15px rgba(234,179,8,0.5)' }}
             />
           ))}
         </div>
       )}
 
-      {/* Constant Scanning Beam - Intense */}
+      {/* Constant Scanning Beam - Simplified */}
       <motion.div 
         animate={{ y: ['-100%', '200%'] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        className="absolute left-0 right-0 h-[50vh] bg-gradient-to-b from-transparent via-white/10 to-transparent pointer-events-none blur-xl"
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        className="absolute left-0 right-0 h-[40vh] bg-gradient-to-b from-transparent via-white/5 to-transparent pointer-events-none blur-lg will-change-transform"
       />
 
       {/* Dark Vignette for Focus */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(1,4,19,0.95)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(1,4,19,0.9)_100%)]" />
     </div>
   );
-};
+});
+DynamicBackground.displayName = 'DynamicBackground';
 
 const Logo = ({ className = "" }: { className?: string }) => (
   <div className={`flex flex-col leading-none ${className}`}>
